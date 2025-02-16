@@ -13,9 +13,11 @@ class PedState:
         self.default_tau = config("tau", 0.5)
         self.step_width = config("step_width", 0.4)
         self.agent_radius = config("agent_radius", 0.35)
-        self.max_speed_multiplier = config("max_speed_multiplier", 1.3)
+        self.max_speed_multiplier = config("max_speed_multiplier", 2.0)
+        self.max_normal_speed_multiplier = config("max_normal_speed_multiplier", 1.2)
 
         self.max_speeds = None
+        self.max_normal_speeds = None
         self.initial_speeds = None
 
         self.ped_states = []
@@ -26,6 +28,9 @@ class PedState:
     def update(self, state, groups):
         self.state = state
         self.groups = groups
+
+    def update_initial_speeds(self, idx):
+        self.initial_speeds[idx] = self.speeds()[idx]
 
     @property
     def state(self):
@@ -41,6 +46,7 @@ class PedState:
         if self.initial_speeds is None:
             self.initial_speeds = self.speeds()
         self.max_speeds = self.max_speed_multiplier * self.initial_speeds
+        self.max_normal_speeds = self.max_normal_speed_multiplier * self.initial_speeds
         self.ped_states.append(self._state.copy())
 
     def get_states(self):

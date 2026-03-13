@@ -45,7 +45,7 @@ class PedState:
             self._state = state
         if self.initial_speeds is None:
             self.initial_speeds = self.speeds()
-        self.max_speeds = self.max_speed_multiplier * self.initial_speeds
+        self.max_speeds = 2.5 # self.max_speed_multiplier * self.initial_speeds
         self.max_normal_speeds = self.max_normal_speed_multiplier * self.initial_speeds
         self.ped_states.append(self._state.copy())
 
@@ -74,6 +74,9 @@ class PedState:
     def step(self, force, groups=None):
         """Move peds according to forces"""
         # desired velocity
+        noise = np.random.normal(0, 0.1, force.shape) # small noise
+        force = force + noise
+        force = self.capped_velocity(force, 2.5)
         desired_velocity = self.vel() + self.step_width * force
         desired_velocity = self.capped_velocity(desired_velocity, self.max_speeds)
         # stop when arrived
